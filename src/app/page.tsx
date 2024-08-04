@@ -1,6 +1,7 @@
 import prisma from "@/services/lib/prisma";
 import { fetchRoles } from "@/services/server-actions";
 import { Container, Title, Text, Anchor, Stack, TextInput, Button } from "@mantine/core";
+import { roles } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 export default async function Home() {
@@ -84,7 +85,7 @@ export default async function Home() {
       </form>
 
       <Stack>
-        {roles.map((val, key) => {
+        {roles.map((val: roles, key: number) => {
           return <Text key={key}>{val.name}</Text>;
         })}
       </Stack>

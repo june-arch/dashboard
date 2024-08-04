@@ -1,6 +1,23 @@
-import { Container, Title, Text, Anchor } from "@mantine/core";
+import prisma from "@/services/lib/prisma";
+import { fetchRoles } from "@/services/server-actions";
+import { Container, Title, Text, Anchor, Stack, TextInput, Button } from "@mantine/core";
+import { revalidatePath } from "next/cache";
 
-export default function Home() {
+export default async function Home() {
+  const roles = await fetchRoles();
+
+  const submitAction = async (formData: FormData) => {
+    "use server";
+
+    const name = formData.get("name");
+    await prisma.roles.create({
+      data: {
+        name: name as string,
+      }
+    });
+
+    revalidatePath("/");
+  }
   return (
     <Container p="xl" mt={200}>
       <Title mb="md">Welcome to Kenstack Mantine Prisma!</Title>
@@ -60,6 +77,17 @@ export default function Home() {
       <Text mt="md">
         Enjoy building your application with Kenstack Mantine Prisma!
       </Text>
+
+      <form action={submitAction}>
+        <TextInput placeholder="input nama role" name="name" label="Role Name" required/>
+        <Button size="compact-md" mt={'sm'} type="submit">submit</Button>
+      </form>
+
+      <Stack>
+        {roles.map((val, key) => {
+          return <Text key={key}>{val.name}</Text>;
+        })}
+      </Stack>
     </Container>
   );
 }
